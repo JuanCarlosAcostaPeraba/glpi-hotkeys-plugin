@@ -55,7 +55,7 @@
 /* Floating Glassmorphism Toast Notification Alert */
 .glpi-hotkeys-toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 80px;
     right: 24px;
     background: rgba(30, 41, 59, 0.9); /* Slate 800 with 90% opacity */
     backdrop-filter: blur(8px);
@@ -109,3 +109,124 @@
         animation: none !important;
     }
 }
+
+/* Floating Action Button (FAB) for Hotkeys Help */
+.glpi-hotkeys-help-badge {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.7); /* Slate dark transparent */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #ffffff;
+    user-select: none;
+}
+
+.glpi-hotkeys-help-icon {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.glpi-hotkeys-help-badge:hover {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.08);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Glassmorphic Help Popover Card */
+.glpi-hotkeys-help-card {
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    width: 290px;
+    background: rgba(15, 23, 42, 0.95); /* Rich Slate 900 */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.95);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #f8fafc;
+    text-align: left;
+}
+
+.glpi-hotkeys-help-badge:hover .glpi-hotkeys-help-card {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.glpi-hotkeys-help-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #38bdf8; /* Tailwind Sky 400 */
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glpi-hotkeys-help-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.glpi-hotkeys-help-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.glpi-hotkeys-help-keys {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #94a3b8; /* Slate 400 */
+    font-size: 11px;
+}
+
+.glpi-hotkeys-help-keys kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-family: SFMono-Regular, Consolas, Menlo, Monaco, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glpi-hotkeys-help-desc {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #cbd5e1; /* Slate 300 */
+    text-align: right;
+    line-height: 1.3;
+}
+

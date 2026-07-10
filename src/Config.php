@@ -48,9 +48,12 @@ class Config {
 
         // Add translation keys for JavaScript alerts
         $config['locales'] = [
-            'saving_ticket' => __('Saving ticket...', 'hotkeys'),
-            'saving_task'   => __('Saving task...', 'hotkeys'),
-            'saving'        => __('Saving...', 'hotkeys'),
+            'saving_ticket'   => __('Saving ticket...', 'hotkeys'),
+            'saving_task'     => __('Saving task...', 'hotkeys'),
+            'saving'          => __('Saving...', 'hotkeys'),
+            'help_title'      => __('Keyboard Shortcuts', 'hotkeys'),
+            'help_desc_smart' => __('Smart Save (Active task/ticket)', 'hotkeys'),
+            'help_desc_force' => __('Force-Save Ticket', 'hotkeys'),
         ];
 
         return $config;

@@ -350,4 +350,77 @@ describe('GLPI Hotkeys JS Engine', () => {
         // Clean up global tinymce mock
         delete window.tinymce;
     });
+
+    describe('formatShortcut helper', () => {
+        it('should format shortcuts for Windows/Linux', () => {
+            Object.defineProperty(window.navigator, 'platform', {
+                value: 'Win32',
+                configurable: true
+            });
+            const formatted = GlpiHotkeys.formatShortcut({ key: 's', ctrlOrMeta: true, alt: true, shift: false });
+            expect(formatted).toBe('Ctrl + Alt + S');
+        });
+
+        it('should format shortcuts for macOS', () => {
+            Object.defineProperty(window.navigator, 'platform', {
+                value: 'MacIntel',
+                configurable: true
+            });
+            const formatted = GlpiHotkeys.formatShortcut({ key: 's', ctrlOrMeta: true, alt: true, shift: true });
+            expect(formatted).toBe('⌘ + ⌥ + ⇧ + S');
+        });
+    });
+
+    describe('updateHelpBadge behavior', () => {
+        beforeEach(() => {
+            const badge = document.querySelector('.glpi-hotkeys-help-badge');
+            if (badge) badge.remove();
+        });
+
+        it('should render help badge when ticket form is present', () => {
+            const form = document.createElement('form');
+            form.setAttribute('action', '/front/ticket.form.php');
+            document.body.appendChild(form);
+
+            const config = {
+                smart_save_enabled: 1,
+                smart_save_shortcut: { key: 's', ctrlOrMeta: true, alt: false, shift: false },
+                force_save_enabled: 1,
+                force_save_shortcut: { key: 's', ctrlOrMeta: true, alt: true, shift: false },
+                locales: { help_title: 'Keyboard Help' }
+            };
+
+            GlpiHotkeys.updateHelpBadge(config);
+
+            const badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).not.toBeNull();
+            
+            const title = badge.querySelector('.glpi-hotkeys-help-title');
+            expect(title.textContent).toBe('Keyboard Help');
+
+            form.remove();
+        });
+
+        it('should remove help badge when no forms are present', () => {
+            // Render it first
+            const form = document.createElement('form');
+            form.setAttribute('action', '/front/ticket.form.php');
+            document.body.appendChild(form);
+
+            const config = {
+                smart_save_enabled: 1,
+                smart_save_shortcut: { key: 's', ctrlOrMeta: true, alt: false },
+                locales: {}
+            };
+
+            GlpiHotkeys.updateHelpBadge(config);
+            expect(document.querySelector('.glpi-hotkeys-help-badge')).not.toBeNull();
+
+            // Remove form and run updateHelpBadge again
+            form.remove();
+            GlpiHotkeys.updateHelpBadge(config);
+
+            expect(document.querySelector('.glpi-hotkeys-help-badge')).toBeNull();
+        });
+    });
 });

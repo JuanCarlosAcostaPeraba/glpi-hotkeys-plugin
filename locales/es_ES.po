@@ -92,3 +92,12 @@ msgstr "Configuración"
 
 msgid "Save"
 msgstr "Guardar"
+
+msgid "Keyboard Shortcuts"
+msgstr "Atajos de Teclado"
+
+msgid "Smart Save (Active task/ticket)"
+msgstr "Guardado Inteligente (Tarea/Ticket activo)"
+
+msgid "Force-Save Ticket"
+msgstr "Forzar Guardado de Ticket"

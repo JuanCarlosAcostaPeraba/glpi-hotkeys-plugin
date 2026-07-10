@@ -93,3 +93,12 @@ msgstr ""
 
 msgid "Save"
 msgstr ""
+
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+msgid "Smart Save (Active task/ticket)"
+msgstr ""
+
+msgid "Force-Save Ticket"
+msgstr ""

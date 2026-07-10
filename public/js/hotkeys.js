@@ -450,6 +450,131 @@
         }
     }
 
+    /**
+     * Format a shortcut object into a readable string (e.g. "Ctrl + Alt + S").
+     * @param {object} shortcut 
+     * @returns {string}
+     */
+    function formatShortcut(shortcut) {
+        if (!shortcut) return '';
+        const parts = [];
+        const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+        
+        if (shortcut.ctrlOrMeta) {
+            parts.push(isMac ? '⌘' : 'Ctrl');
+        }
+        if (shortcut.alt) {
+            parts.push(isMac ? '⌥' : 'Alt');
+        }
+        if (shortcut.shift) {
+            parts.push(isMac ? '⇧' : 'Shift');
+        }
+        
+        let key = shortcut.key;
+        if (key.length === 1) {
+            key = key.toUpperCase();
+        } else {
+            key = key.charAt(0).toUpperCase() + key.slice(1);
+        }
+        parts.push(key);
+        
+        return parts.join(' + ');
+    }
+
+    let helpBadge = null;
+    let observer = null;
+
+    /**
+     * Add a row to the shortcut help popup.
+     */
+    function addShortcutRow(parent, keys, desc) {
+        const row = document.createElement('div');
+        row.className = 'glpi-hotkeys-help-row';
+
+        const keysCol = document.createElement('div');
+        keysCol.className = 'glpi-hotkeys-help-keys';
+
+        keys.split(' + ').forEach((part, index) => {
+            if (index > 0) {
+                keysCol.appendChild(document.createTextNode(' + '));
+            }
+            const kbd = document.createElement('kbd');
+            kbd.textContent = part;
+            keysCol.appendChild(kbd);
+        });
+
+        const descCol = document.createElement('div');
+        descCol.className = 'glpi-hotkeys-help-desc';
+        descCol.textContent = desc;
+
+        row.appendChild(keysCol);
+        row.appendChild(descCol);
+        parent.appendChild(row);
+    }
+
+    /**
+     * Dynamically update (inject or remove) the help floating action button.
+     */
+    function updateHelpBadge(config) {
+        const { ticketForms, taskForms } = getSupportedForms();
+        const hasForms = ticketForms.length > 0 || taskForms.length > 0;
+
+        if (!hasForms) {
+            if (helpBadge) {
+                helpBadge.remove();
+                helpBadge = null;
+            }
+            return;
+        }
+
+        if (helpBadge) {
+            return; // Already rendered
+        }
+
+        helpBadge = document.createElement('div');
+        helpBadge.className = 'glpi-hotkeys-help-badge';
+        
+        const icon = document.createElement('span');
+        icon.className = 'glpi-hotkeys-help-icon';
+        icon.textContent = '?';
+        helpBadge.appendChild(icon);
+
+        const card = document.createElement('div');
+        card.className = 'glpi-hotkeys-help-card';
+
+        const title = document.createElement('div');
+        title.className = 'glpi-hotkeys-help-title';
+        title.textContent = config.locales?.help_title || 'Keyboard Shortcuts';
+        card.appendChild(title);
+
+        const list = document.createElement('div');
+        list.className = 'glpi-hotkeys-help-list';
+
+        if (config.smart_save_enabled) {
+            addShortcutRow(list, formatShortcut(config.smart_save_shortcut), config.locales?.help_desc_smart || 'Smart Save');
+        }
+        if (config.force_save_enabled) {
+            addShortcutRow(list, formatShortcut(config.force_save_shortcut), config.locales?.help_desc_force || 'Force-Save Ticket');
+        }
+
+        card.appendChild(list);
+        helpBadge.appendChild(card);
+        document.body.appendChild(helpBadge);
+    }
+
+    /**
+     * Start observing mutations to react to dynamic AJAX form insertions/removals.
+     */
+    function startObserver(config) {
+        if (typeof MutationObserver === 'undefined') return;
+        if (observer) return;
+
+        observer = new MutationObserver(() => {
+            updateHelpBadge(config);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
     // Expose APIs for unit tests and GLPI
     const GlpiHotkeys = {
         lockedForms,
@@ -467,6 +592,8 @@
         submitForm,
         handleGlobalKeydown,
         bindTinyMCE,
+        formatShortcut,
+        updateHelpBadge,
         init: function() {
             window.addEventListener('keydown', handleGlobalKeydown, true);
 
@@ -483,6 +610,13 @@
                     clearInterval(pollInterval);
                 }
             }, 500);
+
+            // Load config and dynamically initialize the help badge + MutationObserver
+            const config = loadConfig();
+            if (config) {
+                updateHelpBadge(config);
+                startObserver(config);
+            }
         }
     };
 
