@@ -9,7 +9,9 @@ declare(strict_types=1);
  * @license GPL-3.0-or-later
  */
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+    define('GLPI_ROOT', '../../..');
+}
 include(GLPI_ROOT . '/inc/includes.php');
 
 // Restrict access to administrators with config update permissions
