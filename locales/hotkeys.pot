@@ -90,3 +90,6 @@ msgstr ""
 
 msgid "Configuration"
 msgstr ""
+
+msgid "Save"
+msgstr ""

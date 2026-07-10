@@ -89,3 +89,6 @@ msgstr "Configuración predeterminada restaurada"
 
 msgid "Configuration"
 msgstr "Configuración"
+
+msgid "Save"
+msgstr "Guardar"
