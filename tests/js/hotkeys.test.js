@@ -510,5 +510,33 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             form2.remove();
         });
+
+        it('should detect form visibility based on isFormVisible rules', () => {
+            const form = document.createElement('form');
+            document.body.appendChild(form);
+
+            // Case 1: Form has layout dimensions
+            Object.defineProperty(form, 'offsetWidth', { value: 100, configurable: true });
+            Object.defineProperty(form, 'offsetHeight', { value: 100, configurable: true });
+            expect(GlpiHotkeys.isFormVisible(form)).toBe(true);
+
+            // Case 2: Form has 0 dimensions (e.g. display: contents) but has visible child input
+            Object.defineProperty(form, 'offsetWidth', { value: 0, configurable: true });
+            Object.defineProperty(form, 'offsetHeight', { value: 0, configurable: true });
+            
+            const input = document.createElement('input');
+            form.appendChild(input);
+            Object.defineProperty(input, 'offsetWidth', { value: 50, configurable: true });
+            Object.defineProperty(input, 'offsetHeight', { value: 50, configurable: true });
+            
+            expect(GlpiHotkeys.isFormVisible(form)).toBe(true);
+
+            // Case 3: Form has 0 dimensions and input has 0 dimensions (hidden)
+            Object.defineProperty(input, 'offsetWidth', { value: 0, configurable: true });
+            Object.defineProperty(input, 'offsetHeight', { value: 0, configurable: true });
+            expect(GlpiHotkeys.isFormVisible(form)).toBe(false);
+
+            form.remove();
+        });
     });
 });

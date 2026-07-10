@@ -40,6 +40,25 @@
     }
 
     /**
+     * Detect if a form is visible (either itself or contains visible inputs/buttons).
+     * This handles forms styled with "display: contents" which have 0 dimensions.
+     * @param {HTMLFormElement} form 
+     * @returns {boolean}
+     */
+    function isFormVisible(form) {
+        if (!form) return false;
+        if (isVisible(form)) return true;
+
+        const children = form.querySelectorAll('input, textarea, select, button, .form-control');
+        for (let i = 0; i < children.length; i++) {
+            if (isVisible(children[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Detect if a form is a supported Ticket form.
      * @param {HTMLFormElement} form 
      * @returns {boolean}
@@ -112,7 +131,7 @@
 
         forms.forEach(form => {
             if (!form.isConnected) return;
-            if (!isVisible(form)) return;
+            if (!isFormVisible(form)) return;
 
             if (isTicketTaskForm(form)) {
                 taskForms.push(form);
@@ -697,6 +716,7 @@
         lockedForms,
         loadConfig,
         isVisible,
+        isFormVisible,
         isTicketForm,
         isTicketTaskForm,
         getSupportedForms,
