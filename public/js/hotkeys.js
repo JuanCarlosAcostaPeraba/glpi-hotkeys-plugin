@@ -196,8 +196,13 @@
         }
 
         // 5. Main visible supported ticket form.
+        // ONLY save if it is dirty (modified) or if the active element is inside it!
         if (ticketForms.length > 0) {
-            return { form: ticketForms[0], type: 'ticket' };
+            const mainTicketForm = ticketForms[0];
+            const activeForm = activeEl ? activeEl.closest('form') : null;
+            if (mainTicketForm.dataset.dirty === 'true' || activeForm === mainTicketForm) {
+                return { form: mainTicketForm, type: 'ticket' };
+            }
         }
 
         // 6. No action.
@@ -406,8 +411,18 @@
         const bindEditor = (editor) => {
             if (editor._glpiHotkeysBound) return;
             editor._glpiHotkeysBound = true;
+            
             editor.on('keydown', (evt) => {
                 handleGlobalKeydown(evt, editor);
+            });
+
+            // Mark form as dirty when typing/changing content in TinyMCE
+            editor.on('change input KeyUp', () => {
+                const element = editor.getElement();
+                const form = element ? element.closest('form') : null;
+                if (form) {
+                    form.dataset.dirty = 'true';
+                }
             });
         };
 
@@ -750,6 +765,21 @@
                     clearInterval(pollInterval);
                 }
             }, 500);
+
+            // Listen to input and change events to mark forms as dirty (modified)
+            document.addEventListener('change', (e) => {
+                const form = e.target.closest('form');
+                if (form) {
+                    form.dataset.dirty = 'true';
+                }
+            }, true);
+
+            document.addEventListener('input', (e) => {
+                const form = e.target.closest('form');
+                if (form) {
+                    form.dataset.dirty = 'true';
+                }
+            }, true);
 
             // Load config and dynamically initialize the help badge + MutationObserver
             const config = loadConfig();

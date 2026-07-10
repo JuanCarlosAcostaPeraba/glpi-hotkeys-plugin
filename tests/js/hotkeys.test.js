@@ -549,5 +549,37 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             form.remove();
         });
+
+        it('should target ticket form under smart save only when dirty or focused', () => {
+            const form = document.createElement('form');
+            form.setAttribute('action', '/front/ticket.form.php');
+            form.setAttribute('id', 'form_ticket');
+            document.body.appendChild(form);
+
+            // Case 1: Focus on body, form NOT dirty -> returns null
+            Object.defineProperty(document, 'activeElement', { value: document.body, configurable: true });
+            let target = GlpiHotkeys.getTargetFormForSmartSave();
+            expect(target).toBeNull();
+
+            // Case 2: Focus on body, form IS dirty -> returns ticket form
+            form.dataset.dirty = 'true';
+            target = GlpiHotkeys.getTargetFormForSmartSave();
+            expect(target).not.toBeNull();
+            expect(target.form).toBe(form);
+            expect(target.type).toBe('ticket');
+
+            // Case 3: Focus inside form, form NOT dirty -> returns ticket form
+            delete form.dataset.dirty;
+            const input = document.createElement('input');
+            form.appendChild(input);
+            Object.defineProperty(document, 'activeElement', { value: input, configurable: true });
+
+            target = GlpiHotkeys.getTargetFormForSmartSave();
+            expect(target).not.toBeNull();
+            expect(target.form).toBe(form);
+            expect(target.type).toBe('ticket');
+
+            form.remove();
+        });
     });
 });
