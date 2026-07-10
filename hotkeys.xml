@@ -1,23 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin>
-    <name>Hotkeys</name>
-    <key>hotkeys</key>
-    <version>1.0.0</version>
-    <homepage>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin</homepage>
-    <author>Juan Carlos Acosta Peraba</author>
-    <license>GPL-3.0-or-later</license>
-    <description>
-        <![CDATA[
-        <p><strong>EN:</strong> Save ticket forms and ticket task forms using keyboard shortcuts.
-        - Smart Save (Ctrl/Cmd + S): Saves the currently active or edited task form (in modal or timeline), otherwise saves the ticket form.
-        - Force Save Ticket (Ctrl/Cmd + Alt + S): Bypasses task forms to directly save the ticket.</p>
-        <p><strong>ES:</strong> Guarda formularios de tickets y tareas de tickets usando atajos de teclado.
-        - Guardado Inteligente (Ctrl/Cmd + S): Guarda el formulario de tarea activo o editado (en modal o timeline), de lo contrario guarda el ticket.
-        - Forzar Guardado de Ticket (Ctrl/Cmd + Alt + S): Ignora las tareas abiertas para guardar directamente el ticket.</p>
-        ]]>
-    </description>
-    <compatibility>
-        <min_glpi_version>11.0.0</min_glpi_version>
-        <max_glpi_version>11.99.99</max_glpi_version>
-    </compatibility>
-</plugin>
+<root>
+	<name>Hotkeys</name>
+	<key>hotkeys</key>
+
+	<!-- stable | unstable | beta | alpha -->
+	<state>stable</state>
+
+	<!-- 40x40px or bigger. Marketplace will resize it. -->
+	<logo>https://raw.githubusercontent.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/main/assets/logo.png</logo>
+
+	<description>
+		<short>
+			<en>Save tickets and ticket tasks using keyboard shortcuts.</en>
+			<es_ES>Guarda tickets y tareas de tickets mediante atajos de teclado.</es_ES>
+			<fr_FR>Enregistrez les tickets et les tâches de ticket à l'aide de raccourcis clavier.</fr_FR>
+		</short>
+		<long>
+			<en><![CDATA[
+**Hotkeys** is a productivity enhancement plugin for GLPI that lets technicians save ticket forms and ticket task forms using keyboard shortcuts.
+
+It automatically adds:
+
+- **Smart Save (`Ctrl + S` / `Cmd + S`)**: Intelligently saves the active form. If a ticket task form is active or open in a modal, it saves the task. Otherwise, it saves the ticket.
+- **Force-Save Ticket (`Ctrl + Alt + S` / `Cmd + Alt + S`)**: Directly saves the main ticket form, ignoring any open task forms.
+- **Safe Submission Guard**: Prevents double submissions and holding keys, and respects HTML5 native browser validations.
+- **Non-blocking Visual Feedback**: Displays a small toast notification on save operations.
+- **Admin Configuration Screen**: Turn shortcuts on/off, capture key combinations with a live keyboard recorder, and toggle visual alerts.
+
+**Features:**
+- Platform-native modifier handling (`Cmd` on macOS and `Ctrl` elsewhere)
+- Full timeline and AJAX support (remains functional after dynamic updates and dialog popups)
+- Multi-language support (English, Spanish, French)
+- Dark theme compatible
+- Zero performance impact
+
+Designed to improve visibility, speed up operations, and enhance ticket management efficiency for support teams.
+
+Developed for real-world usage at the **Hospital Universitario de Canarias (HUC)**.
+			]]></en>
+
+			<es_ES><![CDATA[
+**Hotkeys** es un plugin de productividad para GLPI que permite a los técnicos guardar formularios de tickets y tareas de tickets mediante atajos de teclado.
+
+Añade automáticamente:
+
+- **Guardado Inteligente (`Ctrl + S` / `Cmd + S`)**: Guarda de forma inteligente el formulario activo. Si el formulario de tarea está activo o abierto en un modal, guarda la tarea. De lo contrario, guarda el ticket.
+- **Forzar Guardado de Ticket (`Ctrl + Alt + S` / `Cmd + Alt + S`)**: Guarda directamente el formulario del ticket, ignorando cualquier tarea abierta.
+- **Protección de Envío Seguro**: Evita envíos duplicados o por repetición de teclas, y respeta las validaciones nativas de HTML5.
+- **Comentarios Visuales**: Muestra una alerta toast flotante no bloqueante durante la operación de guardado.
+- **Pantalla de Configuración**: Activa o desactiva atajos, captura combinaciones con un grabador de teclado en vivo y gestiona alertas.
+
+**Características:**
+- Manejo nativo de modificadores (`Cmd` en macOS y `Ctrl` en otros sistemas)
+- Soporte dinámico para timeline y AJAX (funciona tras recargas dinámicas y popups)
+- Soporte multiidioma (Inglés, Español, Francés)
+- Compatible con tema oscuro
+- Sin impacto en el rendimiento
+
+Diseñado para mejorar la visibilidad, acelerar la atención técnica y mejorar la eficiencia en la gestión diaria de tickets.
+
+Desarrollado para uso real en el **Hospital Universitario de Canarias (HUC)**.
+			]]></es_ES>
+
+			<fr_FR><![CDATA[
+**Hotkeys** est un plugin de productivité pour GLPI qui permet aux techniciens d'enregistrer des formulaires de tickets et de tâches de tickets à l'aide de raccourcis clavier.
+
+Il ajoute automatiquement :
+
+- **Sauvegarde Intelligente (`Ctrl + S` / `Cmd + S`)** : Enregistre intelligemment le formulaire actif. Si une tâche est active ou ouverte dans un modal, elle enregistre la tâche. Sinon, elle enregistre le ticket.
+- **Forcer la Sauvegarde du Ticket (`Ctrl + Alt + S` / `Cmd + Alt + S`)** : Enregistre directement le formulaire du ticket principal, en ignorant les formulaires de tâches ouverts.
+- **Garde d'Envoi Sécurisé** : Évite les doubles envois accidentels et respecte les validations HTML5 natives du navigateur.
+- **Notification Visuelle Non Bloquante** : Affiche un toast flottant lors des opérations d'enregistrement.
+- **Écran de Configuration** : Activez/désactivez les raccourcis, enregistrez des combinaisons en direct et configurez les retours visuels.
+
+**Fonctionnalités :**
+- Gestion des modificateurs native (`Cmd` sur macOS et `Ctrl` ailleurs)
+- Support complet de la timeline et d'AJAX (fonctionne après les rechargements dynamiques et les fenêtres modales)
+- Support multilingue (Anglais, Espagnol, Français)
+- Compatible avec le thème sombre
+- Aucun impact sur les performances
+
+Conçu pour améliorer la rapidité de traitement et optimiser l'efficacité de la gestion des tickets pour les équipes de support.
+
+Développé pour une utilisation réelle à l'**Hospital Universitario de Canarias (HUC)**.
+			]]></fr_FR>
+		</long>
+	</description>
+
+	<homepage>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin</homepage>
+
+	<download>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/releases</download>
+	<issues>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/issues</issues>
+	<readme>https://raw.githubusercontent.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/main/README.md</readme>
+
+	<authors>
+		<author>Juan Carlos Acosta Perabá</author>
+	</authors>
+
+	<versions>
+		<version>
+			<num>1.0.0</num>
+			<compatibility>~11.0.0</compatibility>
+			<download_url>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/releases/download/v1.0.0/hotkeys-1.0.0.zip</download_url>
+		</version>
+	</versions>
+
+	<langs>
+		<lang>en_GB</lang>
+		<lang>es_ES</lang>
+		<lang>fr_FR</lang>
+	</langs>
+
+	<license>GPL v3+</license>
+
+	<tags>
+		<en>
+			<tag>hotkeys</tag>
+			<tag>shortcuts</tag>
+			<tag>ticket</tag>
+			<tag>task</tag>
+			<tag>save</tag>
+			<tag>productivity</tag>
+			<tag>ui-enhancement</tag>
+			<tag>configuration</tag>
+		</en>
+		<es_ES>
+			<tag>atajos</tag>
+			<tag>teclado</tag>
+			<tag>ticket</tag>
+			<tag>tarea</tag>
+			<tag>guardar</tag>
+			<tag>configuracion</tag>
+		</es_ES>
+		<fr_FR>
+			<tag>raccourcis</tag>
+			<tag>clavier</tag>
+			<tag>ticket</tag>
+			<tag>tâche</tag>
+			<tag>sauvegarder</tag>
+			<tag>configuration</tag>
+		</fr_FR>
+	</tags>
+
+	<screenshots>
+		<screenshot>https://raw.githubusercontent.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/main/assets/screenshots/screenshot-config.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin/main/assets/screenshots/screenshot-save-toast.png</screenshot>
+	</screenshots>
+
+</root>
