@@ -1,0 +1,92 @@
+# GLPI Hotkeys Plugin
+# Copyright (C) 2026 Juan Carlos Acosta Peraba
+# This file is distributed under the same license as the Hotkeys package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Hotkeys 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10 10:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hotkeys"
+msgstr ""
+
+msgid "Keyboard shortcuts to save tickets and tasks in GLPI."
+msgstr ""
+
+msgid "Hotkeys Plugin Configuration"
+msgstr ""
+
+msgid "Smart save"
+msgstr ""
+
+msgid "Enable smart save"
+msgstr ""
+
+msgid "Smart-save shortcut"
+msgstr ""
+
+msgid "Force-save ticket"
+msgstr ""
+
+msgid "Enable force-save ticket"
+msgstr ""
+
+msgid "Force-save-ticket shortcut"
+msgstr ""
+
+msgid "Visual feedback"
+msgstr ""
+
+msgid "Enable visual feedback"
+msgstr ""
+
+msgid "Restore defaults"
+msgstr ""
+
+msgid "Saving ticket..."
+msgstr ""
+
+msgid "Saving task..."
+msgstr ""
+
+msgid "Saving..."
+msgstr ""
+
+msgid "Shortcut cannot be empty"
+msgstr ""
+
+msgid "Shortcut must require at least one modifier key (Ctrl or Cmd)"
+msgstr ""
+
+msgid "Modifier-only shortcuts are not allowed"
+msgstr ""
+
+msgid "Unsupported key"
+msgstr ""
+
+msgid "Smart save and force-save ticket shortcuts must be different"
+msgstr ""
+
+msgid "This shortcut is reserved or dangerous"
+msgstr ""
+
+msgid "Ctrl/Cmd + Shift + S is blocked to prevent conflicts"
+msgstr ""
+
+msgid "Settings saved successfully"
+msgstr ""
+
+msgid "Default settings restored"
+msgstr ""
+
+msgid "Configuration"
+msgstr ""

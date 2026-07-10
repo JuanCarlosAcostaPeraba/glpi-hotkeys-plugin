@@ -1,0 +1,314 @@
+{# templates/config.html.twig #}
+<div class="container-fluid py-4 glpi-hotkeys-config-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form action="{{ _SERVER['PHP_SELF'] }}" method="post" id="hotkeys-config-form">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-gradient bg-primary text-white py-3 px-4 rounded-top-3">
+                        <div class="d-flex align-items-center">
+                            <i class="ti ti-keyboard fs-3 me-2"></i>
+                            <h4 class="card-title mb-0">{{ __('Hotkeys Plugin Configuration', 'hotkeys') }}</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        {# 1. Smart Save Config Section #}
+                        <div class="mb-4 pb-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ __('Smart save', 'hotkeys') }}</h5>
+                                    <p class="text-muted small mb-0">{{ __('Saves the active task form if open, otherwise saves the main ticket form.', 'hotkeys') }}</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input form-switch-input" type="checkbox" name="smart_save_enabled" id="smart_save_enabled" value="1" {% if config.smart_save_enabled %}checked{% endif %}>
+                                    <label class="form-check-label" for="smart_save_enabled">{{ __('Enable smart save', 'hotkeys') }}</label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-3 shortcut-row" id="smart_save_row">
+                                <span class="text-secondary small">{{ __('Smart-save shortcut', 'hotkeys') }}:</span>
+                                <div class="d-flex align-items-center gap-2 p-2 border rounded-2 bg-light shortcut-recorder" id="smart_recorder_container">
+                                    <div id="smart_shortcut_display" class="d-flex gap-1 align-items-center">
+                                        {# Keyboard keys will be rendered dynamically by JavaScript #}
+                                    </div>
+                                    <input type="hidden" name="smart_save_shortcut" id="smart_shortcut_input" value='{{ config.smart_save_shortcut|json_encode|raw }}'>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-2 ms-2 px-3 record-btn" id="smart_record_btn" onclick="startRecording('smart')">
+                                        <i class="ti ti-circle-dot me-1"></i>{{ __('Record', 'hotkeys') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 2. Force Save Ticket Config Section #}
+                        <div class="mb-4 pb-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ __('Force-save ticket', 'hotkeys') }}</h5>
+                                    <p class="text-muted small mb-0">{{ __('Always saves the ticket form directly, ignoring any active task forms.', 'hotkeys') }}</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input form-switch-input" type="checkbox" name="force_save_enabled" id="force_save_enabled" value="1" {% if config.force_save_enabled %}checked{% endif %}>
+                                    <label class="form-check-label" for="force_save_enabled">{{ __('Enable force-save ticket', 'hotkeys') }}</label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-3 shortcut-row" id="force_save_row">
+                                <span class="text-secondary small">{{ __('Force-save-ticket shortcut', 'hotkeys') }}:</span>
+                                <div class="d-flex align-items-center gap-2 p-2 border rounded-2 bg-light shortcut-recorder" id="force_recorder_container">
+                                    <div id="force_shortcut_display" class="d-flex gap-1 align-items-center">
+                                        {# Keyboard keys will be rendered dynamically by JavaScript #}
+                                    </div>
+                                    <input type="hidden" name="force_save_shortcut" id="force_shortcut_input" value='{{ config.force_save_shortcut|json_encode|raw }}'>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-2 ms-2 px-3 record-btn" id="force_record_btn" onclick="startRecording('force')">
+                                        <i class="ti ti-circle-dot me-1"></i>{{ __('Record', 'hotkeys') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 3. Visual Feedback Section #}
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ __('Visual feedback', 'hotkeys') }}</h5>
+                                    <p class="text-muted small mb-0">{{ __('Displays a non-blocking notification on the screen during save operations.', 'hotkeys') }}</p>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input form-switch-input" type="checkbox" name="feedback_enabled" id="feedback_enabled" value="1" {% if config.feedback_enabled %}checked{% endif %}>
+                                    <label class="form-check-label" for="feedback_enabled">{{ __('Enable visual feedback', 'hotkeys') }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {# Form Actions #}
+                    <div class="card-footer bg-light p-4 border-0 d-flex justify-content-between rounded-bottom-3">
+                        <button type="submit" name="restore_defaults" class="btn btn-outline-danger px-4 rounded-3 d-flex align-items-center" onclick="return confirm('{{ __('Are you sure you want to restore default settings?', 'hotkeys') }}');">
+                            <i class="ti ti-refresh me-2"></i>{{ __('Restore defaults', 'hotkeys') }}
+                        </button>
+                        <button type="submit" name="save" class="btn btn-primary px-4 rounded-3 d-flex align-items-center">
+                            <i class="ti ti-device-floppy me-2"></i>{{ _sx('button', 'Save') }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial display rendering
+    updateDisplayFromInputs();
+    
+    // Toggle row visibility based on switch checked state
+    setupToggleBindings();
+});
+
+let recordingTarget = null; // 'smart' or 'force'
+
+function setupToggleBindings() {
+    const smartSwitch = document.getElementById('smart_save_enabled');
+    const smartRow = document.getElementById('smart_save_row');
+    const forceSwitch = document.getElementById('force_save_enabled');
+    const forceRow = document.getElementById('force_save_row');
+    
+    const updateSmartVis = () => {
+        smartRow.style.opacity = smartSwitch.checked ? '1' : '0.5';
+        document.getElementById('smart_record_btn').disabled = !smartSwitch.checked;
+    };
+    const updateForceVis = () => {
+        forceRow.style.opacity = forceSwitch.checked ? '1' : '0.5';
+        document.getElementById('force_record_btn').disabled = !forceSwitch.checked;
+    };
+    
+    smartSwitch.addEventListener('change', updateSmartVis);
+    forceSwitch.addEventListener('change', updateForceVis);
+    
+    updateSmartVis();
+    updateForceVis();
+}
+
+function updateDisplayFromInputs() {
+    try {
+        const smartVal = JSON.parse(document.getElementById('smart_shortcut_input').value);
+        updateShortcutDisplay('smart', smartVal);
+    } catch(e) {
+        console.error('Error parsing smart shortcut config', e);
+    }
+    
+    try {
+        const forceVal = JSON.parse(document.getElementById('force_shortcut_input').value);
+        updateShortcutDisplay('force', forceVal);
+    } catch(e) {
+        console.error('Error parsing force shortcut config', e);
+    }
+}
+
+function updateShortcutDisplay(type, shortcut) {
+    const display = document.getElementById(type + '_shortcut_display');
+    display.innerHTML = '';
+    
+    const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    
+    if (shortcut.ctrlOrMeta) {
+        addKeyBadge(display, isMac ? '⌘ Cmd' : 'Ctrl');
+    }
+    if (shortcut.alt) {
+        addKeyBadge(display, isMac ? '⌥ Alt' : 'Alt');
+    }
+    if (shortcut.shift) {
+        addKeyBadge(display, '⇧ Shift');
+    }
+    
+    let keyText = shortcut.key;
+    if (keyText.length === 1) {
+        keyText = keyText.toUpperCase();
+    } else {
+        keyText = keyText.charAt(0).toUpperCase() + keyText.slice(1);
+    }
+    addKeyBadge(display, keyText, 'bg-dark text-white');
+}
+
+function addKeyBadge(container, text, extraClass = 'bg-secondary text-white') {
+    const kbd = document.createElement('kbd');
+    kbd.className = 'glpi-hotkeys-kbd px-2 py-1 mx-1 rounded-2 shadow-sm ' + extraClass;
+    kbd.textContent = text;
+    container.appendChild(kbd);
+}
+
+function startRecording(type) {
+    if (recordingTarget) {
+        stopRecording();
+    }
+    
+    recordingTarget = type;
+    const container = document.getElementById(type + '_recorder_container');
+    const display = document.getElementById(type + '_shortcut_display');
+    const btn = document.getElementById(type + '_record_btn');
+    
+    container.classList.add('recording');
+    display.innerHTML = '<span class="recording-placeholder text-warning fw-bold pulse-text">Press keys...</span>';
+    btn.textContent = 'Cancel';
+    btn.className = 'btn btn-danger btn-sm rounded-2 ms-2 px-3';
+    btn.onclick = stopRecording;
+    
+    window.addEventListener('keydown', handleRecordingKeydown, true);
+}
+
+function stopRecording() {
+    if (!recordingTarget) return;
+    
+    const type = recordingTarget;
+    const container = document.getElementById(type + '_recorder_container');
+    const btn = document.getElementById(type + '_record_btn');
+    
+    container.classList.remove('recording');
+    btn.innerHTML = '<i class="ti ti-circle-dot me-1"></i>Record';
+    btn.className = 'btn btn-outline-secondary btn-sm rounded-2 ms-2 px-3';
+    btn.onclick = function() { startRecording(type); };
+    
+    window.removeEventListener('keydown', handleRecordingKeydown, true);
+    
+    // Restore display
+    try {
+        const val = JSON.parse(document.getElementById(type + '_shortcut_input').value);
+        updateShortcutDisplay(type, val);
+    } catch(e) {}
+    
+    recordingTarget = null;
+}
+
+function handleRecordingKeydown(e) {
+    if (!recordingTarget) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const key = e.key;
+    
+    // Ignore modifier-only keypresses during composition
+    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(key)) {
+        return;
+    }
+    
+    const ctrlOrMeta = e.ctrlKey || e.metaKey;
+    const alt = e.altKey;
+    const shift = e.shiftKey;
+    
+    const shortcut = {
+        key: key.toLowerCase(),
+        ctrlOrMeta: ctrlOrMeta,
+        alt: alt,
+        shift: shift
+    };
+    
+    let errorMsg = null;
+    const isValid = validateShortcutClient(shortcut, function(err) { errorMsg = err; });
+    
+    if (!isValid) {
+        alert(errorMsg);
+        stopRecording();
+        return;
+    }
+    
+    // Update input and display
+    document.getElementById(recordingTarget + '_shortcut_input').value = JSON.stringify(shortcut);
+    updateShortcutDisplay(recordingTarget, shortcut);
+    
+    // Finished recording
+    stopRecording();
+}
+
+function validateShortcutClient(shortcut, errorCallback) {
+    const key = shortcut.key.trim();
+    const ctrl = shortcut.ctrlOrMeta;
+    const alt = shortcut.alt;
+    const shift = shortcut.shift;
+    
+    if (key === '') {
+        errorCallback('{{ __('Shortcut cannot be empty', 'hotkeys') }}');
+        return false;
+    }
+    
+    if (!ctrl) {
+        errorCallback('{{ __('Shortcut must require at least one modifier key (Ctrl or Cmd)', 'hotkeys') }}');
+        return false;
+    }
+    
+    const modifiers = ['control', 'shift', 'alt', 'meta', 'command'];
+    if (modifiers.includes(key.toLowerCase())) {
+        errorCallback('{{ __('Modifier-only shortcuts are not allowed', 'hotkeys') }}');
+        return false;
+    }
+    
+    if (ctrl && shift && key.toLowerCase() === 's') {
+        errorCallback('{{ __('Ctrl/Cmd + Shift + S is blocked to prevent conflicts', 'hotkeys') }}');
+        return false;
+    }
+    
+    // Dangerous browser defaults
+    const dangerous = ['w', 't', 'n', 'q', 'r', 'f', 'p', 'h', 'o'];
+    if (ctrl && !alt && !shift && dangerous.includes(key.toLowerCase())) {
+        errorCallback('{{ __('This shortcut is reserved or dangerous', 'hotkeys') }}');
+        return false;
+    }
+    
+    // Check identical values with the other input
+    const otherType = recordingTarget === 'smart' ? 'force' : 'smart';
+    try {
+        const otherVal = JSON.parse(document.getElementById(otherType + '_shortcut_input').value);
+        if (otherVal.key.toLowerCase() === key.toLowerCase() &&
+            otherVal.ctrlOrMeta === ctrl &&
+            otherVal.alt === alt &&
+            otherVal.shift === shift) {
+            errorCallback('{{ __('Smart save and force-save ticket shortcuts must be different', 'hotkeys') }}');
+            return false;
+        }
+    } catch(e) {}
+    
+    return true;
+}
+</script>

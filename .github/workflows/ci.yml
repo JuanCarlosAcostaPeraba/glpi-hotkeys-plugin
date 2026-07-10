@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3', '8.4', '8.5']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: json, mbstring
+        coverage: none
+
+    - name: Validate composer.json
+      run: composer validate --strict
+
+    - name: Run standalone PHP tests
+      run: php tests/php/run.php
+
+  js-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-node: '20'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run JavaScript tests
+      run: npm test
+
+    - name: Verify minified JavaScript assets are synchronized
+      run: |
+        npm run build
+        git diff --exit-code public/js/hotkeys.min.js

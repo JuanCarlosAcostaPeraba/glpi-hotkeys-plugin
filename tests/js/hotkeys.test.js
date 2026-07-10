@@ -1,0 +1,294 @@
+/**
+ * GLPI Hotkeys Plugin - Javascript Unit Tests
+ * @vitest-environment jsdom
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Import the hotkeys engine. Since it runs as IIFE, we require it in the JSDOM context.
+let GlpiHotkeys;
+
+describe('GLPI Hotkeys JS Engine', () => {
+    let mockMeta;
+
+    beforeEach(() => {
+        // Setup JSDOM body
+        document.body.innerHTML = '';
+        
+        // Mock offsetWidth/offsetHeight globally for JSDOM
+        Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+            configurable: true,
+            value: 100
+        });
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+            configurable: true,
+            value: 100
+        });
+
+        // Mock window.navigator.platform to test macOS vs others
+        Object.defineProperty(window.navigator, 'platform', {
+            value: 'Win32',
+            configurable: true
+        });
+
+        // Set default configurations in a meta tag
+        mockMeta = document.createElement('meta');
+        mockMeta.setAttribute('name', 'glpi-hotkeys-config');
+        mockMeta.setAttribute('content', JSON.stringify({
+            smart_save_enabled: true,
+            smart_save_shortcut: { key: 's', ctrlOrMeta: true, alt: false, shift: false },
+            force_save_enabled: true,
+            force_save_shortcut: { key: 's', ctrlOrMeta: true, alt: true, shift: false },
+            feedback_enabled: true,
+            locales: {
+                saving_ticket: 'Saving ticket...',
+                saving_task: 'Saving task...'
+            }
+        }));
+        document.head.appendChild(mockMeta);
+
+        // Load the hotkeys module
+        // Reset modules cache to reload fresh instance
+        vi.resetModules();
+        GlpiHotkeys = require('../../public/js/hotkeys.js');
+    });
+
+    afterEach(() => {
+        // Restore prototype definitions
+        delete HTMLElement.prototype.offsetWidth;
+        delete HTMLElement.prototype.offsetHeight;
+        
+        if (mockMeta && mockMeta.parentNode) {
+            mockMeta.parentNode.removeChild(mockMeta);
+        }
+        document.body.innerHTML = '';
+        vi.restoreAllMocks();
+    });
+
+    it('should correctly load the configuration from meta tag', () => {
+        const config = GlpiHotkeys.loadConfig();
+        expect(config).not.toBeNull();
+        expect(config.smart_save_enabled).toBe(true);
+        expect(config.smart_save_shortcut.key).toBe('s');
+    });
+
+    it('should match smart save Ctrl + S on Windows/Linux', () => {
+        const config = GlpiHotkeys.loadConfig();
+        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, metaKey: false });
+        
+        const matched = GlpiHotkeys.matchShortcut(event, config.smart_save_shortcut);
+        expect(matched).toBe(true);
+    });
+
+    it('should match smart save Cmd + S on macOS', () => {
+        Object.defineProperty(window.navigator, 'platform', {
+            value: 'MacIntel',
+            configurable: true
+        });
+
+        const config = GlpiHotkeys.loadConfig();
+        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: false, metaKey: true });
+        
+        const matched = GlpiHotkeys.matchShortcut(event, config.smart_save_shortcut);
+        expect(matched).toBe(true);
+    });
+
+    it('should match force ticket save Ctrl + Alt + S', () => {
+        const config = GlpiHotkeys.loadConfig();
+        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, altKey: true });
+        
+        const matched = GlpiHotkeys.matchShortcut(event, config.force_save_shortcut);
+        expect(matched).toBe(true);
+    });
+
+    it('should ignore duplicate keys when event.repeat is true', () => {
+        const eventHandlerSpy = vi.spyOn(GlpiHotkeys, 'handleGlobalKeydown');
+        
+        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true, repeat: true });
+        window.dispatchEvent(event);
+        
+        // Wait, handleGlobalKeydown will run, but should return early on event.repeat
+        // We can test if loadConfig is called or not, since e.repeat check happens first.
+        const loadConfigSpy = vi.spyOn(GlpiHotkeys, 'loadConfig');
+        GlpiHotkeys.handleGlobalKeydown(event);
+        expect(loadConfigSpy).not.toHaveBeenCalled();
+    });
+
+    it('should ignore unrelated keyboard shortcuts', () => {
+        const config = GlpiHotkeys.loadConfig();
+        const event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true });
+        
+        const matched = GlpiHotkeys.matchShortcut(event, config.smart_save_shortcut);
+        expect(matched).toBe(false);
+    });
+
+    it('should correctly identify ticket forms', () => {
+        const ticketForm = document.createElement('form');
+        ticketForm.setAttribute('action', '/front/ticket.form.php');
+        
+        const genericForm = document.createElement('form');
+        genericForm.setAttribute('action', '/front/computer.form.php');
+
+        expect(GlpiHotkeys.isTicketForm(ticketForm)).toBe(true);
+        expect(GlpiHotkeys.isTicketForm(genericForm)).toBe(false);
+    });
+
+    it('should correctly identify task forms', () => {
+        const taskForm = document.createElement('form');
+        taskForm.setAttribute('action', '/front/tickettask.form.php');
+        
+        const genericForm = document.createElement('form');
+        genericForm.setAttribute('action', '/front/computer.form.php');
+
+        expect(GlpiHotkeys.isTicketTaskForm(taskForm)).toBe(true);
+        expect(GlpiHotkeys.isTicketTaskForm(genericForm)).toBe(false);
+    });
+
+    it('should respect smart save priority: task form inside modal takes precedence over ticket form', () => {
+        // Create ticket form
+        const ticketForm = document.createElement('form');
+        ticketForm.setAttribute('action', '/front/ticket.form.php');
+        ticketForm.style.width = '100px'; // make it visible in JSDOM
+        ticketForm.style.height = '100px';
+        document.body.appendChild(ticketForm);
+
+        // Create modal with task form
+        const modal = document.createElement('div');
+        modal.className = 'modal show';
+        modal.style.width = '100px';
+        modal.style.height = '100px';
+        
+        const taskForm = document.createElement('form');
+        taskForm.setAttribute('action', '/front/tickettask.form.php');
+        taskForm.style.width = '100px';
+        taskForm.style.height = '100px';
+        modal.appendChild(taskForm);
+        document.body.appendChild(modal);
+
+        // Mock window getComputedStyle z-index
+        vi.spyOn(window, 'getComputedStyle').mockImplementation((el) => {
+            return { zIndex: el.classList.contains('modal') ? '1050' : '1' };
+        });
+
+        // Resolve smart save target
+        const target = GlpiHotkeys.getTargetFormForSmartSave();
+        expect(target).not.toBeNull();
+        expect(target.type).toBe('task');
+        expect(target.form).toBe(taskForm);
+    });
+
+    it('should respect force ticket save: targets ticket form even if a task form is visible', () => {
+        const ticketForm = document.createElement('form');
+        ticketForm.setAttribute('action', '/front/ticket.form.php');
+        ticketForm.style.width = '100px';
+        ticketForm.style.height = '100px';
+        document.body.appendChild(ticketForm);
+
+        const taskForm = document.createElement('form');
+        taskForm.setAttribute('action', '/front/tickettask.form.php');
+        taskForm.style.width = '100px';
+        taskForm.style.height = '100px';
+        document.body.appendChild(taskForm);
+
+        const target = GlpiHotkeys.getTargetFormForForceSaveTicket();
+        expect(target).not.toBeNull();
+        expect(target.type).toBe('ticket');
+        expect(target.form).toBe(ticketForm);
+    });
+
+    it('should ignore hidden forms', () => {
+        const hiddenForm = document.createElement('form');
+        hiddenForm.setAttribute('action', '/front/ticket.form.php');
+        document.body.appendChild(hiddenForm);
+
+        // Override offsetWidth and offsetHeight to 0 to simulate hidden state
+        Object.defineProperty(hiddenForm, 'offsetWidth', {
+            configurable: true,
+            value: 0
+        });
+        Object.defineProperty(hiddenForm, 'offsetHeight', {
+            configurable: true,
+            value: 0
+        });
+
+        const forms = GlpiHotkeys.getSupportedForms();
+        expect(forms.ticketForms.length).toBe(0);
+    });
+
+    it('should prevent duplicate submissions using locking mechanism', () => {
+        const form = document.createElement('form');
+        form.setAttribute('action', '/front/ticket.form.php');
+        form.style.width = '100px';
+        form.style.height = '100px';
+        
+        const btn = document.createElement('button');
+        btn.type = 'submit';
+        form.appendChild(btn);
+        document.body.appendChild(form);
+
+        // Spy on form requestSubmit
+        form.requestSubmit = vi.fn();
+
+        const config = GlpiHotkeys.loadConfig();
+
+        // First submit should work and lock the form
+        const success1 = GlpiHotkeys.submitForm(form, btn, config, 'ticket');
+        expect(success1).toBe(true);
+
+        // Second submit should fail immediately due to lock
+        const success2 = GlpiHotkeys.submitForm(form, btn, config, 'ticket');
+        expect(success2).toBe(false);
+    });
+
+    it('should not lock form when HTML5 validation fails', () => {
+        const form = document.createElement('form');
+        form.setAttribute('action', '/front/ticket.form.php');
+        form.style.width = '100px';
+        form.style.height = '100px';
+        
+        const input = document.createElement('input');
+        input.required = true;
+        form.appendChild(input);
+
+        const btn = document.createElement('button');
+        btn.type = 'submit';
+        form.appendChild(btn);
+        document.body.appendChild(form);
+
+        const config = GlpiHotkeys.loadConfig();
+
+        // Submission should return false and NOT lock the form because of validation failure
+        const submitted = GlpiHotkeys.submitForm(form, btn, config, 'ticket');
+        expect(submitted).toBe(false);
+        expect(GlpiHotkeys.lockedForms.has(form)).toBe(false);
+    });
+
+    it('should release lock if another submit event listener cancels submission', () => {
+        const form = document.createElement('form');
+        form.setAttribute('action', '/front/ticket.form.php');
+        form.style.width = '100px';
+        form.style.height = '100px';
+        
+        const btn = document.createElement('button');
+        btn.type = 'submit';
+        form.appendChild(btn);
+        document.body.appendChild(form);
+
+        // Add a listener that cancels the submit event
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+        });
+
+        const config = GlpiHotkeys.loadConfig();
+
+        // Dispatch key event or call submitForm directly
+        GlpiHotkeys.submitForm(form, btn, config, 'ticket');
+
+        // Since the event was prevented, submitForm listener should fire and delete the lock immediately
+        // Wait, dispatching the submit event triggers listeners
+        const event = new Event('submit', { cancelable: true });
+        form.dispatchEvent(event);
+
+        expect(GlpiHotkeys.lockedForms.has(form)).toBe(false);
+    });
+});

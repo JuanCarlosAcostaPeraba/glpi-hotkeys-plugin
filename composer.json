@@ -1,0 +1,25 @@
+{
+    "name": "glpi-plugins/hotkeys",
+    "description": "Keyboard shortcuts to save tickets and tasks in GLPI.",
+    "type": "glpi-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Juan Carlos Acosta Peraba",
+            "email": "japeraba@example.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "phpstan/phpstan": "^1.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "GlpiPlugin\\Hotkeys\\": "src/"
+        }
+    }
+}

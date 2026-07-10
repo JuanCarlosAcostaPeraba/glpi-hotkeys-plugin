@@ -1,0 +1,91 @@
+# GLPI Hotkeys Plugin - English translation
+# Copyright (C) 2026 Juan Carlos Acosta Peraba
+# This file is distributed under the same license as the Hotkeys package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Hotkeys 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10 10:00+0100\n"
+"PO-Revision-Date: 2026-07-10 10:00+0100\n"
+"Last-Translator: Juan Carlos Acosta Peraba <japeraba@example.com>\n"
+"Language-Team: English <en@li.org>\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hotkeys"
+msgstr "Hotkeys"
+
+msgid "Keyboard shortcuts to save tickets and tasks in GLPI."
+msgstr "Keyboard shortcuts to save tickets and tasks in GLPI."
+
+msgid "Hotkeys Plugin Configuration"
+msgstr "Hotkeys Plugin Configuration"
+
+msgid "Smart save"
+msgstr "Smart save"
+
+msgid "Enable smart save"
+msgstr "Enable smart save"
+
+msgid "Smart-save shortcut"
+msgstr "Smart-save shortcut"
+
+msgid "Force-save ticket"
+msgstr "Force-save ticket"
+
+msgid "Enable force-save ticket"
+msgstr "Enable force-save ticket"
+
+msgid "Force-save-ticket shortcut"
+msgstr "Force-save-ticket shortcut"
+
+msgid "Visual feedback"
+msgstr "Visual feedback"
+
+msgid "Enable visual feedback"
+msgstr "Enable visual feedback"
+
+msgid "Restore defaults"
+msgstr "Restore defaults"
+
+msgid "Saving ticket..."
+msgstr "Saving ticket..."
+
+msgid "Saving task..."
+msgstr "Saving task..."
+
+msgid "Saving..."
+msgstr "Saving..."
+
+msgid "Shortcut cannot be empty"
+msgstr "Shortcut cannot be empty"
+
+msgid "Shortcut must require at least one modifier key (Ctrl or Cmd)"
+msgstr "Shortcut must require at least one modifier key (Ctrl or Cmd)"
+
+msgid "Modifier-only shortcuts are not allowed"
+msgstr "Modifier-only shortcuts are not allowed"
+
+msgid "Unsupported key"
+msgstr "Unsupported key"
+
+msgid "Smart save and force-save ticket shortcuts must be different"
+msgstr "Smart save and force-save ticket shortcuts must be different"
+
+msgid "This shortcut is reserved or dangerous"
+msgstr "This shortcut is reserved or dangerous"
+
+msgid "Ctrl/Cmd + Shift + S is blocked to prevent conflicts"
+msgstr "Ctrl/Cmd + Shift + S is blocked to prevent conflicts"
+
+msgid "Settings saved successfully"
+msgstr "Settings saved successfully"
+
+msgid "Default settings restored"
+msgstr "Default settings restored"
+
+msgid "Configuration"
+msgstr "Configuration"

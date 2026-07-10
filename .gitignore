@@ -1,0 +1,8 @@
+/vendor/
+/node_modules/
+/.phpunit.result.cache
+/tests/js/coverage/
+*.zip
+*.tar.gz
+.DS_Store
+Thumbs.db

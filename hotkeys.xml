@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <name>Hotkeys</name>
+    <key>hotkeys</key>
+    <version>1.0.0</version>
+    <homepage>https://github.com/JuanCarlosAcostaPeraba/glpi-hotkeys-plugin</homepage>
+    <author>Juan Carlos Acosta Peraba</author>
+    <license>GPL-3.0-or-later</license>
+    <description>
+        <![CDATA[
+        <p><strong>EN:</strong> Save ticket forms and ticket task forms using keyboard shortcuts.
+        - Smart Save (Ctrl/Cmd + S): Saves the currently active or edited task form (in modal or timeline), otherwise saves the ticket form.
+        - Force Save Ticket (Ctrl/Cmd + Alt + S): Bypasses task forms to directly save the ticket.</p>
+        <p><strong>ES:</strong> Guarda formularios de tickets y tareas de tickets usando atajos de teclado.
+        - Guardado Inteligente (Ctrl/Cmd + S): Guarda el formulario de tarea activo o editado (en modal o timeline), de lo contrario guarda el ticket.
+        - Forzar Guardado de Ticket (Ctrl/Cmd + Alt + S): Ignora las tareas abiertas para guardar directamente el ticket.</p>
+        ]]>
+    </description>
+    <compatibility>
+        <min_glpi_version>11.0.0</min_glpi_version>
+        <max_glpi_version>11.99.99</max_glpi_version>
+    </compatibility>
+</plugin>

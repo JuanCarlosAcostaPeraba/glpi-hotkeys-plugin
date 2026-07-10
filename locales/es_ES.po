@@ -1,0 +1,91 @@
+# GLPI Hotkeys Plugin - Spanish translation
+# Copyright (C) 2026 Juan Carlos Acosta Peraba
+# This file is distributed under the same license as the Hotkeys package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Hotkeys 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10 10:00+0100\n"
+"PO-Revision-Date: 2026-07-10 10:00+0100\n"
+"Last-Translator: Juan Carlos Acosta Peraba <japeraba@example.com>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hotkeys"
+msgstr "Hotkeys"
+
+msgid "Keyboard shortcuts to save tickets and tasks in GLPI."
+msgstr "Atajos de teclado para guardar tickets y tareas en GLPI."
+
+msgid "Hotkeys Plugin Configuration"
+msgstr "Configuración del plugin Hotkeys"
+
+msgid "Smart save"
+msgstr "Guardado inteligente"
+
+msgid "Enable smart save"
+msgstr "Habilitar guardado inteligente"
+
+msgid "Smart-save shortcut"
+msgstr "Atajo de guardado inteligente"
+
+msgid "Force-save ticket"
+msgstr "Forzar guardado de ticket"
+
+msgid "Enable force-save ticket"
+msgstr "Habilitar forzar guardado de ticket"
+
+msgid "Force-save-ticket shortcut"
+msgstr "Atajo de forzar guardado de ticket"
+
+msgid "Visual feedback"
+msgstr "Comentarios visuales"
+
+msgid "Enable visual feedback"
+msgstr "Habilitar comentarios visuales"
+
+msgid "Restore defaults"
+msgstr "Restaurar valores predeterminados"
+
+msgid "Saving ticket..."
+msgstr "Guardando ticket..."
+
+msgid "Saving task..."
+msgstr "Guardando tarea..."
+
+msgid "Saving..."
+msgstr "Guardando..."
+
+msgid "Shortcut cannot be empty"
+msgstr "El atajo no puede estar vacío"
+
+msgid "Shortcut must require at least one modifier key (Ctrl or Cmd)"
+msgstr "El atajo debe requerir al menos una tecla modificadora (Ctrl o Cmd)"
+
+msgid "Modifier-only shortcuts are not allowed"
+msgstr "No se permiten atajos compuestos únicamente por modificadores"
+
+msgid "Unsupported key"
+msgstr "Tecla no compatible"
+
+msgid "Smart save and force-save ticket shortcuts must be different"
+msgstr "Los atajos de guardado inteligente y de forzar guardado deben ser diferentes"
+
+msgid "This shortcut is reserved or dangerous"
+msgstr "Este atajo está reservado o es peligroso"
+
+msgid "Ctrl/Cmd + Shift + S is blocked to prevent conflicts"
+msgstr "Ctrl/Cmd + Shift + S está bloqueado para evitar conflictos"
+
+msgid "Settings saved successfully"
+msgstr "Configuración guardada correctamente"
+
+msgid "Default settings restored"
+msgstr "Configuración predeterminada restaurada"
+
+msgid "Configuration"
+msgstr "Configuración"
