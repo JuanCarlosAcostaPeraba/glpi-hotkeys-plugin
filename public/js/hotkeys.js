@@ -126,10 +126,10 @@
 
     /**
      * Resolve target form using the smart save priority rules.
+     * @param {HTMLElement} [activeEl]
      * @returns {{form: HTMLFormElement, type: string}|null}
      */
-    function getTargetFormForSmartSave() {
-        const activeEl = document.activeElement;
+    function getTargetFormForSmartSave(activeEl = document.activeElement) {
         const { ticketForms, taskForms } = getSupportedForms();
 
         // 1. Supported task form containing the currently focused element.
@@ -184,10 +184,10 @@
 
     /**
      * Resolve target form for force-saving the ticket.
+     * @param {HTMLElement} [activeEl]
      * @returns {{form: HTMLFormElement, type: string}|null}
      */
-    function getTargetFormForForceSaveTicket() {
-        const activeEl = document.activeElement;
+    function getTargetFormForForceSaveTicket(activeEl = document.activeElement) {
         const { ticketForms } = getSupportedForms();
 
         // 1. Supported ticket form containing the currently focused element.
@@ -374,19 +374,56 @@
     }
 
     /**
+     * Bind keydown listeners to TinyMCE editors to forward keyboard shortcuts.
+     */
+    function bindTinyMCE() {
+        if (typeof window.tinymce === 'undefined') {
+            return;
+        }
+
+        const bindEditor = (editor) => {
+            if (editor._glpiHotkeysBound) return;
+            editor._glpiHotkeysBound = true;
+            editor.on('keydown', (evt) => {
+                handleGlobalKeydown(evt, editor);
+            });
+        };
+
+        // Bind existing editors
+        if (window.tinymce.editors && Array.isArray(window.tinymce.editors)) {
+            window.tinymce.editors.forEach(bindEditor);
+        } else if (window.tinymce.editors) {
+            for (const id in window.tinymce.editors) {
+                if (Object.prototype.hasOwnProperty.call(window.tinymce.editors, id)) {
+                    bindEditor(window.tinymce.editors[id]);
+                }
+            }
+        }
+
+        // Bind future editors
+        window.tinymce.on('AddEditor', (e) => {
+            bindEditor(e.editor);
+        });
+    }
+
+    /**
      * Main event handler for global keydown events.
      * @param {KeyboardEvent} e 
+     * @param {object} [editor] TinyMCE editor instance if forwarded
      */
-    function handleGlobalKeydown(e) {
+    function handleGlobalKeydown(e, editor = null) {
         // Ignore repeated keydown events
         if (e.repeat) return;
 
         const config = GlpiHotkeys.loadConfig();
         if (!config) return;
 
+        // Resolve active element (fallback to textarea if from TinyMCE editor)
+        const activeEl = editor ? editor.getElement() : document.activeElement;
+
         // 1. Process Smart Save
         if (config.smart_save_enabled && matchShortcut(e, config.smart_save_shortcut)) {
-            const target = getTargetFormForSmartSave();
+            const target = getTargetFormForSmartSave(activeEl);
             if (target) {
                 const btn = findSubmitButton(target.form);
                 if (btn && !btn.disabled) {
@@ -400,7 +437,7 @@
 
         // 2. Process Force Save Ticket
         if (config.force_save_enabled && matchShortcut(e, config.force_save_shortcut)) {
-            const target = getTargetFormForForceSaveTicket();
+            const target = getTargetFormForForceSaveTicket(activeEl);
             if (target) {
                 const btn = findSubmitButton(target.form);
                 if (btn && !btn.disabled) {
@@ -429,8 +466,23 @@
         hideToast,
         submitForm,
         handleGlobalKeydown,
+        bindTinyMCE,
         init: function() {
             window.addEventListener('keydown', handleGlobalKeydown, true);
+
+            // Bind existing and future TinyMCE editors
+            bindTinyMCE();
+            let pollCount = 0;
+            const pollInterval = setInterval(() => {
+                if (window.tinymce) {
+                    bindTinyMCE();
+                    clearInterval(pollInterval);
+                }
+                pollCount++;
+                if (pollCount > 10) {
+                    clearInterval(pollInterval);
+                }
+            }, 500);
         }
     };
 

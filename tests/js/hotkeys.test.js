@@ -291,4 +291,63 @@ describe('GLPI Hotkeys JS Engine', () => {
 
         expect(GlpiHotkeys.lockedForms.has(form)).toBe(false);
     });
+
+    it('should forward keydown from TinyMCE editor to handleGlobalKeydown', () => {
+        // Mock global tinymce object
+        window.tinymce = {
+            editors: [],
+            on: vi.fn((event, callback) => {
+                if (event === 'AddEditor') {
+                    window.tinymce._addEditorCallback = callback;
+                }
+            })
+        };
+
+        // Re-initialize hotkeys to bind tinymce
+        GlpiHotkeys.init();
+
+        // Create a mock form and textarea
+        const taskForm = document.createElement('form');
+        taskForm.setAttribute('action', '/front/tickettask.form.php');
+        taskForm.style.width = '100px';
+        taskForm.style.height = '100px';
+        const textarea = document.createElement('textarea');
+        taskForm.appendChild(textarea);
+        const btn = document.createElement('button');
+        btn.type = 'submit';
+        taskForm.appendChild(btn);
+        document.body.appendChild(taskForm);
+
+        // Mock editor instance
+        const mockEditor = {
+            _glpiHotkeysBound: false,
+            getElement: () => textarea,
+            on: vi.fn((event, callback) => {
+                if (event === 'keydown') {
+                    mockEditor._keydownCallback = callback;
+                }
+            })
+        };
+
+        // Simulate AddEditor event
+        if (window.tinymce._addEditorCallback) {
+            window.tinymce._addEditorCallback({ editor: mockEditor });
+        }
+
+        // Verify keydown listener was bound to mock editor
+        expect(mockEditor.on).toHaveBeenCalledWith('keydown', expect.any(Function));
+
+        // Mock requestSubmit on taskForm to handle JSDOM missing implementation
+        taskForm.requestSubmit = vi.fn();
+
+        // Simulate keydown event inside TinyMCE
+        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true });
+        mockEditor._keydownCallback(event);
+
+        // Verify that requestSubmit was triggered on the parent task form
+        expect(taskForm.requestSubmit).toHaveBeenCalled();
+        
+        // Clean up global tinymce mock
+        delete window.tinymce;
+    });
 });
