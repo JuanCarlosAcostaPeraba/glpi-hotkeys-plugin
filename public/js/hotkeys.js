@@ -513,6 +513,90 @@
     }
 
     /**
+     * Make the help badge draggable and persist its coordinates to localStorage.
+     * @param {HTMLElement} el 
+     */
+    function makeElementDraggable(el) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let isDragging = false;
+
+        // Load saved positions
+        const savedLeft = localStorage.getItem('glpi-hotkeys-help-left');
+        const savedTop = localStorage.getItem('glpi-hotkeys-help-top');
+        if (savedLeft !== null && savedTop !== null) {
+            el.style.right = 'auto';
+            el.style.bottom = 'auto';
+            el.style.left = savedLeft;
+            el.style.top = savedTop;
+        }
+
+        const dragMouseDown = (e) => {
+            // Only drag on left click (button 0)
+            if (e.type === 'mousedown' && e.button !== 0) return;
+            
+            // Get mouse/touch position at startup
+            pos3 = e.clientX || (e.touches && e.touches[0].clientX);
+            pos4 = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+            
+            document.ontouchend = closeDragElement;
+            document.ontouchmove = elementDrag;
+            
+            isDragging = false;
+        };
+
+        const elementDrag = (e) => {
+            isDragging = true;
+            el.classList.add('dragging');
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            
+            // Calculate new position
+            let newTop = el.offsetTop - pos2;
+            let newLeft = el.offsetLeft - pos1;
+            
+            // Constrain inside viewport boundaries
+            const padding = 10;
+            const maxLeft = window.innerWidth - el.offsetWidth - padding;
+            const maxTop = window.innerHeight - el.offsetHeight - padding;
+            
+            newLeft = Math.max(padding, Math.min(newLeft, maxLeft));
+            newTop = Math.max(padding, Math.min(newTop, maxTop));
+            
+            el.style.right = 'auto';
+            el.style.bottom = 'auto';
+            el.style.left = newLeft + 'px';
+            el.style.top = newTop + 'px';
+        };
+
+        const closeDragElement = () => {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+            
+            el.classList.remove('dragging');
+            
+            if (isDragging) {
+                // Save final position to localStorage
+                localStorage.setItem('glpi-hotkeys-help-left', el.style.left);
+                localStorage.setItem('glpi-hotkeys-help-top', el.style.top);
+            }
+        };
+
+        el.onmousedown = dragMouseDown;
+        el.ontouchstart = dragMouseDown;
+    }
+
+    /**
      * Dynamically update (inject or remove) the help floating action button.
      */
     function updateHelpBadge(config) {
@@ -560,6 +644,9 @@
         card.appendChild(list);
         helpBadge.appendChild(card);
         document.body.appendChild(helpBadge);
+
+        // Make the help FAB draggable by the user
+        makeElementDraggable(helpBadge);
     }
 
     /**

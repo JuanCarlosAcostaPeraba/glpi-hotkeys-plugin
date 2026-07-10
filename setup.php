@@ -63,20 +63,19 @@ function plugin_init_hotkeys(): void {
     $PLUGIN_HOOKS[$js_hook]['hotkeys'] = ['js/hotkeys.js'];
     $PLUGIN_HOOKS[$css_hook]['hotkeys'] = ['css/hotkeys.css'];
 
-    // Autoload is active, check class and inject settings
-    if (class_exists(\GlpiPlugin\Hotkeys\Config::class)) {
-        $config = \GlpiPlugin\Hotkeys\Config::getSafeConfig();
-        
-        $PLUGIN_HOOKS[$header_tag_hook]['hotkeys'] = [
-            [
-                'tag'        => 'meta',
-                'properties' => [
-                    'name'    => 'glpi-hotkeys-config',
-                    'content' => json_encode($config),
-                ],
+    // Load config helper manually to ensure it's available for all user roles/sessions
+    require_once __DIR__ . '/src/Config.php';
+    $config = \GlpiPlugin\Hotkeys\Config::getSafeConfig();
+    
+    $PLUGIN_HOOKS[$header_tag_hook]['hotkeys'] = [
+        [
+            'tag'        => 'meta',
+            'properties' => [
+                'name'    => 'glpi-hotkeys-config',
+                'content' => json_encode($config),
             ],
-        ];
-    }
+        ],
+    ];
 }
 
 /**

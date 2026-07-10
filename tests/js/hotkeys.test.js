@@ -422,5 +422,51 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             expect(document.querySelector('.glpi-hotkeys-help-badge')).toBeNull();
         });
+
+        it('should drag help badge and save coordinates to localStorage', () => {
+            const form = document.createElement('form');
+            form.setAttribute('action', '/front/ticket.form.php');
+            document.body.appendChild(form);
+
+            // Mock window properties
+            window.innerWidth = 1000;
+            window.innerHeight = 1000;
+
+            const config = {
+                smart_save_enabled: 1,
+                smart_save_shortcut: { key: 's', ctrlOrMeta: true },
+                locales: {}
+            };
+
+            GlpiHotkeys.updateHelpBadge(config);
+
+            const badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).not.toBeNull();
+
+            // Simulate mousedown
+            const mouseDownEvent = new MouseEvent('mousedown', {
+                clientX: 500,
+                clientY: 500,
+                button: 0
+            });
+            badge.dispatchEvent(mouseDownEvent);
+
+            // Simulate mousemove to drag it
+            const mouseMoveEvent = new MouseEvent('mousemove', {
+                clientX: 450,
+                clientY: 470
+            });
+            document.dispatchEvent(mouseMoveEvent);
+
+            // Simulate mouseup
+            const mouseUpEvent = new MouseEvent('mouseup');
+            document.dispatchEvent(mouseUpEvent);
+
+            // Verify coordinates were stored in localStorage
+            expect(localStorage.getItem('glpi-hotkeys-help-left')).not.toBeNull();
+            expect(localStorage.getItem('glpi-hotkeys-help-top')).not.toBeNull();
+
+            form.remove();
+        });
     });
 });

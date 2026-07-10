@@ -230,3 +230,13 @@
     line-height: 1.3;
 }
 
+/* Dragging state overrides */
+.glpi-hotkeys-help-badge.dragging {
+    transition: none !important;
+    cursor: grabbing !important;
+}
+
+.glpi-hotkeys-help-badge.dragging .glpi-hotkeys-help-card {
+    display: none !important;
+}
+
