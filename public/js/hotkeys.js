@@ -68,19 +68,22 @@
 
         // Check itemtype hidden input
         const itemtypeInput = form.querySelector('input[name="itemtype"]');
-        if (itemtypeInput && itemtypeInput.value === 'Ticket') {
-            return true;
-        }
+        const hasItemtype = itemtypeInput && itemtypeInput.value === 'Ticket';
 
         // Check action URL attribute
         const action = form.getAttribute('action') || '';
-        if (action.includes('ticket.form.php')) {
-            return true;
-        }
+        const hasAction = action.includes('ticket.form.php');
 
         // Check form ID or class
         const id = form.getAttribute('id') || '';
-        if (id.startsWith('ticketform') || id === 'form_ticket') {
+        const hasMainId = id.startsWith('ticketform') || id === 'form_ticket';
+
+        // Check if it contains the main ticket form fields (Title field 'name' and Description field 'content')
+        const hasMainFields = form.querySelector('[name="name"]') && 
+                              (form.querySelector('[name="content"]') || form.querySelector('[name="_content"]'));
+
+        // Must match a ticket identifier AND be the main ticket form (ID or fields present)
+        if ((hasItemtype || hasAction || hasMainId) && (hasMainId || hasMainFields)) {
             return true;
         }
 

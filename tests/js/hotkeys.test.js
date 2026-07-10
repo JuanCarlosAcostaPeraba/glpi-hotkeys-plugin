@@ -125,6 +125,7 @@ describe('GLPI Hotkeys JS Engine', () => {
     it('should correctly identify ticket forms', () => {
         const ticketForm = document.createElement('form');
         ticketForm.setAttribute('action', '/front/ticket.form.php');
+        ticketForm.setAttribute('id', 'form_ticket');
         
         const genericForm = document.createElement('form');
         genericForm.setAttribute('action', '/front/computer.form.php');
@@ -148,6 +149,7 @@ describe('GLPI Hotkeys JS Engine', () => {
         // Create ticket form
         const ticketForm = document.createElement('form');
         ticketForm.setAttribute('action', '/front/ticket.form.php');
+        ticketForm.setAttribute('id', 'form_ticket');
         ticketForm.style.width = '100px'; // make it visible in JSDOM
         ticketForm.style.height = '100px';
         document.body.appendChild(ticketForm);
@@ -180,6 +182,7 @@ describe('GLPI Hotkeys JS Engine', () => {
     it('should respect force ticket save: targets ticket form even if a task form is visible', () => {
         const ticketForm = document.createElement('form');
         ticketForm.setAttribute('action', '/front/ticket.form.php');
+        ticketForm.setAttribute('id', 'form_ticket');
         ticketForm.style.width = '100px';
         ticketForm.style.height = '100px';
         document.body.appendChild(ticketForm);
@@ -199,6 +202,7 @@ describe('GLPI Hotkeys JS Engine', () => {
     it('should ignore hidden forms', () => {
         const hiddenForm = document.createElement('form');
         hiddenForm.setAttribute('action', '/front/ticket.form.php');
+        hiddenForm.setAttribute('id', 'form_ticket');
         document.body.appendChild(hiddenForm);
 
         // Override offsetWidth and offsetHeight to 0 to simulate hidden state
@@ -218,6 +222,7 @@ describe('GLPI Hotkeys JS Engine', () => {
     it('should prevent duplicate submissions using locking mechanism', () => {
         const form = document.createElement('form');
         form.setAttribute('action', '/front/ticket.form.php');
+        form.setAttribute('id', 'form_ticket');
         form.style.width = '100px';
         form.style.height = '100px';
         
@@ -243,6 +248,7 @@ describe('GLPI Hotkeys JS Engine', () => {
     it('should not lock form when HTML5 validation fails', () => {
         const form = document.createElement('form');
         form.setAttribute('action', '/front/ticket.form.php');
+        form.setAttribute('id', 'form_ticket');
         form.style.width = '100px';
         form.style.height = '100px';
         
@@ -380,6 +386,7 @@ describe('GLPI Hotkeys JS Engine', () => {
         it('should render help badge when ticket form is present', () => {
             const form = document.createElement('form');
             form.setAttribute('action', '/front/ticket.form.php');
+            form.setAttribute('id', 'form_ticket');
             document.body.appendChild(form);
 
             const config = {
@@ -405,6 +412,7 @@ describe('GLPI Hotkeys JS Engine', () => {
             // Render it first
             const form = document.createElement('form');
             form.setAttribute('action', '/front/ticket.form.php');
+            form.setAttribute('id', 'form_ticket');
             document.body.appendChild(form);
 
             const config = {
@@ -426,6 +434,7 @@ describe('GLPI Hotkeys JS Engine', () => {
         it('should drag help badge and save coordinates to localStorage', () => {
             const form = document.createElement('form');
             form.setAttribute('action', '/front/ticket.form.php');
+            form.setAttribute('id', 'form_ticket');
             document.body.appendChild(form);
 
             // Mock window properties
@@ -472,6 +481,7 @@ describe('GLPI Hotkeys JS Engine', () => {
         it('should dynamically add direction classes based on FAB coordinates', () => {
             const form = document.createElement('form');
             form.setAttribute('action', '/front/ticket.form.php');
+            form.setAttribute('id', 'form_ticket');
             document.body.appendChild(form);
 
             const config = {
@@ -496,6 +506,7 @@ describe('GLPI Hotkeys JS Engine', () => {
             // Re-create form for Case 2
             const form2 = document.createElement('form');
             form2.setAttribute('action', '/front/ticket.form.php');
+            form2.setAttribute('id', 'form_ticket');
             document.body.appendChild(form2);
 
             // Case 2: Far from left and top boundaries (left = 500, top = 500)
