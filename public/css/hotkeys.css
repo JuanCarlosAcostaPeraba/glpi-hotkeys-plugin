@@ -240,3 +240,19 @@
     display: none !important;
 }
 
+/* Smart Tooltip placement overrides */
+.glpi-hotkeys-help-badge.pos-right-side .glpi-hotkeys-help-card {
+    right: auto;
+    left: 0;
+}
+
+.glpi-hotkeys-help-badge.pos-bottom-side .glpi-hotkeys-help-card {
+    bottom: auto;
+    top: 50px;
+    transform: translateY(-10px) scale(0.95);
+}
+
+.glpi-hotkeys-help-badge.pos-bottom-side:hover .glpi-hotkeys-help-card {
+    transform: translateY(0) scale(1);
+}
+

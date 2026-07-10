@@ -468,5 +468,47 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             form.remove();
         });
+
+        it('should dynamically add direction classes based on FAB coordinates', () => {
+            const form = document.createElement('form');
+            form.setAttribute('action', '/front/ticket.form.php');
+            document.body.appendChild(form);
+
+            const config = {
+                smart_save_enabled: 1,
+                smart_save_shortcut: { key: 's', ctrlOrMeta: true },
+                locales: {}
+            };
+
+            // Case 1: Close to left and top boundaries (left = 100, top = 100)
+            Object.defineProperty(HTMLElement.prototype, 'offsetLeft', { value: 100, configurable: true });
+            Object.defineProperty(HTMLElement.prototype, 'offsetTop', { value: 100, configurable: true });
+
+            GlpiHotkeys.updateHelpBadge(config);
+            const badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge.classList.contains('pos-right-side')).toBe(true);
+            expect(badge.classList.contains('pos-bottom-side')).toBe(true);
+
+            // Cleanup badge properly via the API
+            form.remove();
+            GlpiHotkeys.updateHelpBadge(config); // Clears helpBadge and resets closure state
+
+            // Re-create form for Case 2
+            const form2 = document.createElement('form');
+            form2.setAttribute('action', '/front/ticket.form.php');
+            document.body.appendChild(form2);
+
+            // Case 2: Far from left and top boundaries (left = 500, top = 500)
+            Object.defineProperty(HTMLElement.prototype, 'offsetLeft', { value: 500, configurable: true });
+            Object.defineProperty(HTMLElement.prototype, 'offsetTop', { value: 500, configurable: true });
+
+            GlpiHotkeys.updateHelpBadge(config);
+            const badge2 = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge2).not.toBeNull();
+            expect(badge2.classList.contains('pos-right-side')).toBe(false);
+            expect(badge2.classList.contains('pos-bottom-side')).toBe(false);
+
+            form2.remove();
+        });
     });
 });

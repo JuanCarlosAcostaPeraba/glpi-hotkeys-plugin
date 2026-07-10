@@ -513,6 +513,29 @@
     }
 
     /**
+     * Dynamically adjust the direction of the popover card depending on the position of the FAB.
+     * @param {HTMLElement} el The help badge element
+     */
+    function adjustTooltipDirection(el) {
+        const left = el.offsetLeft;
+        const top = el.offsetTop;
+        
+        // If there isn't enough space (less than 300px) on the left side, display popover to the right
+        if (left < 300) {
+            el.classList.add('pos-right-side');
+        } else {
+            el.classList.remove('pos-right-side');
+        }
+        
+        // If there isn't enough space (less than 200px) above the FAB, display popover below
+        if (top < 200) {
+            el.classList.add('pos-bottom-side');
+        } else {
+            el.classList.remove('pos-bottom-side');
+        }
+    }
+
+    /**
      * Make the help badge draggable and persist its coordinates to localStorage.
      * @param {HTMLElement} el 
      */
@@ -575,6 +598,9 @@
             el.style.bottom = 'auto';
             el.style.left = newLeft + 'px';
             el.style.top = newTop + 'px';
+            
+            // Reactively adjust tooltip side during drag
+            adjustTooltipDirection(el);
         };
 
         const closeDragElement = () => {
@@ -584,6 +610,7 @@
             document.ontouchmove = null;
             
             el.classList.remove('dragging');
+            adjustTooltipDirection(el);
             
             if (isDragging) {
                 // Save final position to localStorage
@@ -647,6 +674,9 @@
 
         // Make the help FAB draggable by the user
         makeElementDraggable(helpBadge);
+        
+        // Initial tooltip direction adjustments
+        adjustTooltipDirection(helpBadge);
     }
 
     /**
