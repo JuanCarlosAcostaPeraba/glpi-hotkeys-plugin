@@ -240,31 +240,65 @@
      */
     function findSubmitButton(form) {
         const formId = form.getAttribute('id');
+        const candidates = [];
         
-        // Helper to check if a button belongs to this form
-        const belongsToForm = (btn) => {
-            if (!btn) return false;
-            const btnFormAttr = btn.getAttribute('form');
-            if (btnFormAttr && btnFormAttr !== formId) {
-                return false;
+        // 1. Elements inside the form that belong to this form
+        const insideElements = Array.from(form.querySelectorAll('button, input[type="submit"], input[type="button"]'));
+        insideElements.forEach(el => {
+            const formAttr = el.getAttribute('form');
+            if (!formAttr || (formId && formAttr === formId)) {
+                candidates.push(el);
             }
-            return true;
-        };
+        });
+        
+        // 2. Elements anywhere in the document pointing to this form
+        if (formId) {
+            const outsideElements = Array.from(document.querySelectorAll(`[form="${formId}"]`));
+            outsideElements.forEach(el => {
+                if (!candidates.includes(el)) {
+                    candidates.push(el);
+                }
+            });
+        }
+        
+        // Priority 1: name="add" or name="update" AND type="submit"
+        let bestBtn = candidates.find(el => {
+            const name = el.getAttribute('name');
+            const type = el.getAttribute('type');
+            return (name === 'add' || name === 'update') && type === 'submit';
+        });
+        if (bestBtn) return bestBtn;
 
-        // Look for buttons with name="add" or name="update"
-        let buttons = Array.from(form.querySelectorAll('button[name="add"], input[name="add"], button[name="update"], input[name="update"]'))
-            .filter(belongsToForm);
-        if (buttons.length > 0) return buttons[0];
+        // Priority 2: name="add" or name="update" (any type)
+        bestBtn = candidates.find(el => {
+            const name = el.getAttribute('name');
+            return name === 'add' || name === 'update';
+        });
+        if (bestBtn) return bestBtn;
 
-        // Look for any submit button
-        buttons = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'))
-            .filter(belongsToForm);
-        if (buttons.length > 0) return buttons[0];
+        // Priority 3: type="submit"
+        bestBtn = candidates.find(el => {
+            const type = el.getAttribute('type');
+            return type === 'submit';
+        });
+        if (bestBtn) return bestBtn;
 
-        // Fallback: primary button class
-        buttons = Array.from(form.querySelectorAll('.submit, .btn-primary'))
-            .filter(belongsToForm);
-        if (buttons.length > 0) return buttons[0];
+        // Priority 4: primary classes and not type="button"
+        bestBtn = candidates.find(el => {
+            const cls = el.getAttribute('class') || '';
+            const type = el.getAttribute('type');
+            if (el.getAttribute('id') === 'saveActorNotifySettings') return false;
+            return (cls.includes('submit') || cls.includes('btn-primary')) && type !== 'button';
+        });
+        if (bestBtn) return bestBtn;
+
+        // Fallback: any btn-primary or submit class
+        bestBtn = candidates.find(el => {
+            const cls = el.getAttribute('class') || '';
+            if (el.getAttribute('id') === 'saveActorNotifySettings') return false;
+            return cls.includes('submit') || cls.includes('btn-primary');
+        });
+        if (bestBtn) return bestBtn;
 
         return null;
     }

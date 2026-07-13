@@ -604,5 +604,24 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             form.remove();
         });
+
+        it('should find submit buttons located outside the form element but referencing it via form attribute', () => {
+            const form = document.createElement('form');
+            form.setAttribute('id', 'itil-form');
+            document.body.appendChild(form);
+
+            // Button 1: Save button outside the form
+            const outsideBtn = document.createElement('button');
+            outsideBtn.setAttribute('type', 'submit');
+            outsideBtn.setAttribute('name', 'update');
+            outsideBtn.setAttribute('form', 'itil-form');
+            document.body.appendChild(outsideBtn);
+
+            const resolvedBtn = GlpiHotkeys.findSubmitButton(form);
+            expect(resolvedBtn).toBe(outsideBtn);
+
+            form.remove();
+            outsideBtn.remove();
+        });
     });
 });
