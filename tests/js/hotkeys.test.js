@@ -581,5 +581,28 @@ describe('GLPI Hotkeys JS Engine', () => {
 
             form.remove();
         });
+
+        it('should ignore buttons with foreign HTML5 form attributes in findSubmitButton', () => {
+            const form = document.createElement('form');
+            form.setAttribute('id', 'itil-form');
+            document.body.appendChild(form);
+
+            // Button 1: Foreign form submit button (e.g. self-assignment)
+            const foreignBtn = document.createElement('button');
+            foreignBtn.setAttribute('type', 'submit');
+            foreignBtn.setAttribute('form', 'addme_as_requester_123');
+            form.appendChild(foreignBtn);
+
+            // Button 2: Actual main form submit button
+            const mainBtn = document.createElement('button');
+            mainBtn.setAttribute('type', 'submit');
+            form.appendChild(mainBtn);
+
+            const resolvedBtn = GlpiHotkeys.findSubmitButton(form);
+            expect(resolvedBtn).toBe(mainBtn);
+            expect(resolvedBtn).not.toBe(foreignBtn);
+
+            form.remove();
+        });
     });
 });

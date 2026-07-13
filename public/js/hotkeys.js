@@ -239,17 +239,32 @@
      * @returns {HTMLElement|null}
      */
     function findSubmitButton(form) {
+        const formId = form.getAttribute('id');
+        
+        // Helper to check if a button belongs to this form
+        const belongsToForm = (btn) => {
+            if (!btn) return false;
+            const btnFormAttr = btn.getAttribute('form');
+            if (btnFormAttr && btnFormAttr !== formId) {
+                return false;
+            }
+            return true;
+        };
+
         // Look for buttons with name="add" or name="update"
-        let button = form.querySelector('button[name="add"], input[name="add"], button[name="update"], input[name="update"]');
-        if (button) return button;
+        let buttons = Array.from(form.querySelectorAll('button[name="add"], input[name="add"], button[name="update"], input[name="update"]'))
+            .filter(belongsToForm);
+        if (buttons.length > 0) return buttons[0];
 
         // Look for any submit button
-        button = form.querySelector('button[type="submit"], input[type="submit"]');
-        if (button) return button;
+        buttons = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'))
+            .filter(belongsToForm);
+        if (buttons.length > 0) return buttons[0];
 
         // Fallback: primary button class
-        button = form.querySelector('.submit, .btn-primary');
-        if (button) return button;
+        buttons = Array.from(form.querySelectorAll('.submit, .btn-primary'))
+            .filter(belongsToForm);
+        if (buttons.length > 0) return buttons[0];
 
         return null;
     }
