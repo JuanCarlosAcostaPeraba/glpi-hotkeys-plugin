@@ -534,6 +534,20 @@
             }
             return;
         }
+
+        // 3. Process '?' key to reopen/toggle help badge
+        if (e.key === '?') {
+            const tagName = activeEl ? activeEl.tagName.toLowerCase() : '';
+            const isInput = editor || 
+                            ['input', 'textarea', 'select'].includes(tagName) || 
+                            (activeEl && activeEl.isContentEditable);
+            
+            if (!isInput) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleOrReopenHelpBadge();
+            }
+        }
     }
 
     /**
@@ -724,6 +738,15 @@
             return;
         }
 
+        // If the user closed the badge, do not render it automatically
+        if (localStorage.getItem('glpi-hotkeys-badge-closed') === 'true') {
+            if (helpBadge) {
+                helpBadge.remove();
+                helpBadge = null;
+            }
+            return;
+        }
+
         if (helpBadge) {
             return; // Already rendered
         }
@@ -735,6 +758,21 @@
         icon.className = 'glpi-hotkeys-help-icon';
         icon.textContent = '?';
         helpBadge.appendChild(icon);
+
+        // Add close button (X)
+        const closeBtn = document.createElement('span');
+        closeBtn.className = 'glpi-hotkeys-help-close';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.title = config.locales?.hide_badge || 'Ocultar botón';
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Avoid triggering the card toggle
+            localStorage.setItem('glpi-hotkeys-badge-closed', 'true');
+            if (helpBadge) {
+                helpBadge.remove();
+                helpBadge = null;
+            }
+        });
+        helpBadge.appendChild(closeBtn);
 
         const card = document.createElement('div');
         card.className = 'glpi-hotkeys-help-card';
@@ -763,6 +801,33 @@
         
         // Initial tooltip direction adjustments
         adjustTooltipDirection(helpBadge);
+    }
+
+    /**
+     * Toggle the visibility of the shortcuts help card, or reopen the badge if it was closed.
+     */
+    function toggleOrReopenHelpBadge() {
+        const config = loadConfig();
+        if (!config) return;
+
+        const isClosed = localStorage.getItem('glpi-hotkeys-badge-closed') === 'true';
+        if (isClosed) {
+            localStorage.removeItem('glpi-hotkeys-badge-closed');
+            updateHelpBadge(config);
+            if (helpBadge) {
+                // Force show the card briefly to give visual confirmation of reopening
+                helpBadge.classList.add('force-show-card');
+                setTimeout(() => {
+                    if (helpBadge) {
+                        helpBadge.classList.remove('force-show-card');
+                    }
+                }, 4000);
+            }
+        } else {
+            if (helpBadge) {
+                helpBadge.classList.toggle('force-show-card');
+            }
+        }
     }
 
     /**
@@ -798,6 +863,7 @@
         bindTinyMCE,
         formatShortcut,
         updateHelpBadge,
+        toggleOrReopenHelpBadge,
         init: function() {
             window.addEventListener('keydown', handleGlobalKeydown, true);
 

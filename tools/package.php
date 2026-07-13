@@ -9,7 +9,7 @@ declare(strict_types=1);
  * containing the root folder 'hotkeys/'.
  */
 
-$version = '1.0.3';
+$version = '1.1.0';
 $plugin_key = 'hotkeys';
 $root_dir = dirname(__DIR__);
 $staging_dir = $root_dir . '/build_staging';

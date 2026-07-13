@@ -623,5 +623,78 @@ describe('GLPI Hotkeys JS Engine', () => {
             form.remove();
             outsideBtn.remove();
         });
+
+        it('should allow closing the help badge, persisting state, and reopening via keyboard', () => {
+            const form = document.createElement('form');
+            form.setAttribute('id', 'itil-form');
+            document.body.appendChild(form);
+
+            const config = {
+                smart_save_enabled: 1,
+                smart_save_shortcut: { key: 's', ctrlOrMeta: true },
+                force_save_enabled: 1,
+                force_save_shortcut: { key: 's', ctrlOrMeta: true, alt: true },
+                locales: { help_title: 'Test shortcuts' }
+            };
+
+            localStorage.removeItem('glpi-hotkeys-badge-closed');
+
+            // Render badge
+            GlpiHotkeys.updateHelpBadge(config);
+            let badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).not.toBeNull();
+
+            // Click close button
+            const closeBtn = badge.querySelector('.glpi-hotkeys-help-close');
+            expect(closeBtn).not.toBeNull();
+            closeBtn.click();
+
+            // Badge should be removed
+            badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).toBeNull();
+            expect(localStorage.getItem('glpi-hotkeys-badge-closed')).toBe('true');
+
+            // Trying to render again should be ignored due to closed state
+            GlpiHotkeys.updateHelpBadge(config);
+            badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).toBeNull();
+
+            // Mock document.activeElement as body
+            Object.defineProperty(document, 'activeElement', { value: document.body, configurable: true });
+
+            // Press '?' key on body
+            const keyEvent = new KeyboardEvent('keydown', { key: '?' });
+            GlpiHotkeys.handleGlobalKeydown(keyEvent);
+
+            // Badge should reappear
+            badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).not.toBeNull();
+            expect(localStorage.getItem('glpi-hotkeys-badge-closed')).toBeNull();
+
+            if (badge) badge.remove();
+            form.remove();
+        });
+
+        it('should ignore ? keypress when focused on inputs or textareas', () => {
+            const form = document.createElement('form');
+            form.setAttribute('id', 'itil-form');
+            document.body.appendChild(form);
+
+            localStorage.setItem('glpi-hotkeys-badge-closed', 'true');
+
+            const input = document.createElement('input');
+            document.body.appendChild(input);
+            Object.defineProperty(document, 'activeElement', { value: input, configurable: true });
+
+            const keyEvent = new KeyboardEvent('keydown', { key: '?' });
+            GlpiHotkeys.handleGlobalKeydown(keyEvent);
+
+            let badge = document.querySelector('.glpi-hotkeys-help-badge');
+            expect(badge).toBeNull();
+            expect(localStorage.getItem('glpi-hotkeys-badge-closed')).toBe('true');
+
+            input.remove();
+            form.remove();
+        });
     });
 });
