@@ -76,7 +76,7 @@
 
         // Check form ID or class
         const id = form.getAttribute('id') || '';
-        const hasMainId = id.startsWith('ticketform') || id === 'form_ticket';
+        const hasMainId = id === 'itil-form' || id.startsWith('ticketform') || id === 'form_ticket';
 
         // Check if it contains the main ticket form fields (Title field 'name' and Description field 'content')
         const hasMainFields = form.querySelector('[name="name"]') && 

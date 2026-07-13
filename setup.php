@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @license GPL-3.0-or-later
  */
 
-define('PLUGIN_HOTKEYS_VERSION', '1.0.1');
+define('PLUGIN_HOTKEYS_VERSION', '1.0.2');
 
 /**
  * Returns metadata about the plugin.
